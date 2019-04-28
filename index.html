@@ -1,0 +1,364 @@
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="HandheldFriendly" content="true"> 
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta property="og:type" content="website">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/jchamill/jquery-quiz/master/src/jquery.quiz.css">
+   
+        
+        
+        <title>Employee Enrichment- GAAD QUIZ</title>
+       
+        <style>                            
+                     
+            @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+            body {
+              background: #fff;
+              font-family: 'Open Sans', sans-serif;
+            }
+            h1 {
+              color: #4c4c4c;
+            }
+            .faded {
+              color: #7d7d7d;
+            }
+            #quiz-counter {
+              color: #88449a;
+            }
+            .quiz-container {
+                padding: 0.25em;
+                max-width: 650px;
+                margin: 1em auto;
+            }
+
+            .quiz-container a {
+                text-decoration: none;
+                color: #333;
+            }
+
+            #quiz-header,
+            #quiz-start-screen,
+            #quiz-results-screen,
+            #quiz-counter {
+                text-align: center;
+            }
+
+            #questions {
+              margin-top: 2.5em;
+            }
+
+            .question {
+                font-size: 1.25em;
+            }
+
+            .answers {
+                list-style: none;
+                padding: 0;
+            }
+
+            .answers li:not(:first-child) {
+                margin-top: 1.25em;
+            }
+
+            .answers a,
+            #quiz-controls {
+                background: #f3f3f3;
+                border: .1em solid #efefef;
+            }
+
+            .answers a {
+                display: block;
+                padding: 0.75em 1em;
+                margin-bottom: 0.5em;
+            }
+
+            .answers a.correct {
+                background: #31b72f;
+                border-color: #2db12b;
+            }
+            .answers a.incorrect {
+                background: #e64646;
+                border-color: #e04040;
+            }
+
+            .answers a.correct,
+            .answers a.incorrect {
+                color: #fff;
+            }
+
+            #quiz-controls {
+                color: #111;
+                padding: 1.25em 1em;
+                text-align: center;
+                margin-top: 3.5em;
+            }
+
+            #quiz-response {}
+            #quiz-results {
+                font-size: 1.25em;
+            }
+
+            #quiz-buttons a,
+            .quiz-container .quiz-button,
+            .answers a,
+            #quiz-controls {
+                border-radius: .25em;
+            }
+
+            #quiz-buttons a,
+            .quiz-container .quiz-button {
+                display: inline-block;
+                padding: 0.5em 1em;
+                min-width: 8em;
+            }
+
+            .quiz-button,
+            #quiz-buttons a {
+                color: #fdfdfd!important;
+                background: #3cb7ff;
+                border: .1em solid #3db4f9;
+                transition: 0.2s ease;
+            }
+
+            .quiz-button:hover,
+            #quiz-buttons a:hover {
+                background: #31acf5;
+                border: .1em solid #34aaef;
+                transition: 0.2s ease;
+            }
+
+            /* Quiz State Overrides */
+
+
+            .quiz-results-state #quiz-buttons a {
+                background: #88449a;
+                border-color: #864098;
+                margin: 1em
+            }
+
+
+        
+        
+        </style>
+
+    </head>
+<body>
+    
+   <div id="quiz">
+       
+      <div id="quiz-header">
+        <h1>GAAD Quiz</h1>
+        <p class="faded"> </p>
+      </div>
+       
+      <div id="quiz-start-screen">
+        <p><a href="#" id="quiz-start-btn" class="quiz-button">Start</a></p>
+      </div>
+       
+    </div>
+    
+    
+    
+    
+   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+   <script src='https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.1/mousetrap.min.js'></script>
+    
+    
+    
+   <script>
+       /*!
+ * jquery-quiz v0.0.1 - A simple jQuery quiz plugin.
+ * Copyright (c) 2015 JC Hamill - http://jchamill.github.com/jquery-quiz/
+ * License: MIT
+ */
+
+!function(a,b,c,d){"use strict";a.quiz=function(b,d){var e=this;e.$el=a(b),e.$el.data("quiz",e),e.options=a.extend(a.quiz.defaultOptions,d);var f=e.options.questions,g=f.length,h=e.options.startScreen,i=e.options.startButton,j=e.options.homeButton,k=e.options.resultsScreen,l=e.options.gameOverScreen,m=1,n=0,o=!1;e.methods={init:function(){e.methods.setup(),a(c).on("click",i,function(a){a.preventDefault(),e.methods.start()}),a(c).on("click",j,function(a){a.preventDefault(),e.methods.home()}),a(c).on("click",".answers a",function(a){a.preventDefault(),e.methods.answerQuestion(this)}),a(c).on("click","#quiz-next-btn",function(a){a.preventDefault(),e.methods.nextQuestion()}),a(c).on("click","#quiz-finish-btn",function(a){a.preventDefault(),e.methods.finish()}),a(c).on("click","#quiz-restart-btn, #quiz-retry-btn",function(a){a.preventDefault(),e.methods.restart()})},setup:function(){var b="";e.options.counter&&(b+='<div id="quiz-counter"></div>'),b+='<div id="questions">',a.each(f,function(c,d){b+='<div class="question-container">',b+='<p class="question">'+d.q+"</p>",b+='<ul class="answers">',a.each(d.options,function(a,c){b+='<li><a href="#" data-index="'+a+'">'+c+"</a></li>"}),b+="</ul>",b+="</div>"}),b+="</div>",0===a(k).length&&(b+='<div id="'+k.substr(1)+'">',b+='<p id="quiz-results"></p>',b+="</div>"),b+='<div id="quiz-controls">',b+='<p id="quiz-response"></p>',b+='<div id="quiz-buttons">',b+='<a href="#" id="quiz-next-btn">Next</a>',b+='<a href="#" id="quiz-finish-btn">Finish</a>',b+='<a href="#" id="quiz-restart-btn">Restart</a>',b+="</div>",b+="</div>",e.$el.append(b).addClass("quiz-container quiz-start-state"),a("#quiz-counter").hide(),a(".question-container").hide(),a(l).hide(),a(k).hide(),a("#quiz-controls").hide()},start:function(){e.$el.removeClass("quiz-start-state").addClass("quiz-questions-state"),a(h).hide(),a("#quiz-controls").hide(),a("#quiz-finish-btn").hide(),a("#quiz-restart-btn").hide(),a("#questions").show(),a("#quiz-counter").show(),a(".question-container:first-child").show().addClass("active-question"),e.methods.updateCounter()},answerQuestion:function(b){if(!o){o=!0;var c=a(b),d="",g=c.data("index"),h=m-1,i=f[h].correctIndex;if(g===i)c.addClass("correct"),d=f[h].correctResponse,n++;else if(c.addClass("incorrect"),d=f[h].incorrectResponse,!e.options.allowIncorrect)return void e.methods.gameOver(d);a("#quiz-response").html(d),a("#quiz-controls").fadeIn(),"function"==typeof e.options.answerCallback&&e.options.answerCallback(m,g===i)}},nextQuestion:function(){o=!1,a(".active-question").hide().removeClass("active-question").next(".question-container").show().addClass("active-question"),a("#quiz-controls").hide(),++m===g&&(a("#quiz-next-btn").hide(),a("#quiz-finish-btn").show()),e.methods.updateCounter(),"function"==typeof e.options.nextCallback&&e.options.nextCallback()},gameOver:function(b){if(0===a(l).length){var c="";c+='<div id="'+l.substr(1)+'">',c+='<p id="quiz-gameover-response"></p>',c+='<p><a href="#" id="quiz-retry-btn">Retry</a></p>',c+="</div>",e.$el.append(c)}a("#quiz-gameover-response").html(b),a("#quiz-counter").hide(),a("#questions").hide(),a(l).show()},finish:function(){e.$el.removeClass("quiz-questions-state").addClass("quiz-results-state"),a(".active-question").hide().removeClass("active-question"),a("#quiz-counter").hide(),a("#quiz-response").hide(),a("#quiz-finish-btn").hide(),a("#quiz-next-btn").hide(),a("#quiz-restart-btn").show(),a(k).show(),a("#quiz-results").html("You got "+n+" out of "+g+" correct!<br>The Hidden Sentence is: XXX<br><a href='https://www.apple.com'>Click here to go back and fill the form</a>"),"function"==typeof e.options.finishCallback&&e.options.finishCallback()},restart:function(){e.methods.reset(),e.$el.addClass("quiz-questions-state"),a("#questions").show(),a("#quiz-counter").show(),a(".question-container:first-child").show().addClass("active-question"),e.methods.updateCounter()},reset:function(){o=!1,m=1,n=0,a(".answers a").removeClass("correct incorrect"),e.$el.removeClass().addClass("quiz-container"),a("#quiz-restart-btn").hide(),a(l).hide(),a(k).hide(),a("#quiz-controls").hide(),a("#quiz-response").show(),a("#quiz-next-btn").show(),a("#quiz-counter").hide(),a(".active-question").hide().removeClass("active-question")},home:function(){e.methods.reset(),e.$el.addClass("quiz-start-state"),a(h).show(),"function"==typeof e.options.homeCallback&&e.options.homeCallback()},updateCounter:function(){var b=e.options.counterFormat.replace("%current",m).replace("%total",g);a("#quiz-counter").html(b)}},e.methods.init()},a.quiz.defaultOptions={allowIncorrect:!0,counter:!0,counterFormat:"%current/%total",startScreen:"#quiz-start-screen",startButton:"#quiz-start-btn",homeButton:"#quiz-home-btn",resultsScreen:"#quiz-results-screen",gameOverScreen:"#quiz-gameover-screen"},a.fn.quiz=function(b){return this.each(function(){new a.quiz(this,b)})}}(jQuery,window,document);
+
+
+
+
+$('#quiz').quiz({
+  //resultsScreen: '#results-screen',
+  //counter: false,
+  //homeButton: '#custom-home',
+  counterFormat: 'Question %current of %total',
+  questions: [
+    {
+      'q': 'Which web accessibility feature for web browsing best helps users with low vision? ',
+      'options': [
+        'VoiceOver',
+        'FaceTime',
+        'Screen Flash'
+      ],
+      'correctIndex': 0,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+    
+    
+     {
+      'q': 'What are the four words that make up the POUR acronym for WCAG?',
+      'options': [
+        'Predictable, Operable, Understandable, Repeatable',
+        'Perceivable, Operated, Understandable, Regressive',
+        'Perceivable, Operable, Understandable, Robust'
+      ],
+      'correctIndex': 2,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! Perceivable, Operable, Understandable, Robust'
+    },
+    
+    
+    
+     {
+      'q': 'XXX has low vision. How would you help xxx improve his/her user experience?',
+      'options': [
+        'Increase size of screen',
+        'Turn up the volume ',
+        'Increase size of icons and text'
+      ],
+      'correctIndex': 2,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! Increase size of icons and text'
+    },
+    
+    
+     {
+      'q': 'XXX has issues moving his fingers? How would you help with this?',
+      'options': [
+        'Bigger mouse and keyboard',
+        'Rollerball mouse and onscreen keyboard'
+      ],
+      'correctIndex': 1,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect!'
+    },
+    
+    
+     {
+      'q': 'If a person you are working with has hearing loss what should you make sure you do to help?',
+      'options': [
+        'Speak slowly and clearly',
+        'Face the person directly',
+        'Make sure the light in the room is sufficient',
+        'All of the above'
+      ],
+      'correctIndex': 3,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+     {
+      'q': 'If a person you are helping has difficulties with their sight what can you do to help?',
+      'options': [
+        'Make sure they have the right equipment',
+        'Make sure the room is lit correctly',
+        'Use large visual cues',
+        'All of the above'
+      ],
+      'correctIndex': 3,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect!'
+    },
+     {
+      'q': 'If you are unsure what to do whilst working with a person with disabilities, or have any questions about accessibility who is it best to speak to first?',
+      'options': [
+        'No one, keep it to yourself',
+         'Your manager',
+        'Another person with disabilities'
+       
+      ],
+      'correctIndex': 1,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect!'
+    },
+     {
+      'q': 'XXX is an ex typist who has recently gone blind, how can you help?',
+      'options': [
+        'Suggest Voiceover',
+        'Offer to type for her',
+        'Advise XXX to use FaceTime'
+      ],
+      'correctIndex': 0,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+    
+ 
+    {
+      'q': 'XXX has very little mobility in her/his hands. What would you suggest xxx to use to improve their user experience?',
+      'options': [
+        'Get someone to type for him',
+        'Rollerball mouse with onscreen keyboard',
+        'VoiceOver'
+      ],
+      'correctIndex': 2,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+      {
+      'q': 'XXX has glaucoma and using the computer causes eye strain, what would you recommend?',
+      'options': [
+        'Make text and icons bigger',
+        'Use magnifier',
+        'Increase screen resolution'
+      ],
+      'correctIndex': 1,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+      
+    {
+      'q': 'Which of the following feature is an example of assistive technology?',
+      'options': [
+        'Switch Control',
+        'Reading glasses',
+        'Ergonomic keyboard'
+      ],
+      'correctIndex': 0,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+      {
+      'q': 'An example of an accommodation that will assist people with disabilities so that they may work, go shopping, or get around the community include….',
+      'options': [
+        'A ramp to get into a building that has steps ',
+        'A sign language interpreter ',
+        'A large print application menu ',
+        'All of the above'
+      ],
+      'correctIndex': 3,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    },
+      {
+      'q': 'The ADA, the Americans with Disabilities Act of 1990, was signed into law by..',
+      'options': [
+        'George H.W. Bush',
+        'Abraham Lincoln',
+        'Bill Clinton'
+      ],
+      'correctIndex': 0,
+      'correctResponse': 'Correct! ',
+      'incorrectResponse': 'Incorrect! '
+    }
+        
+    
+    
+    
+    
+  ]
+});
+    
+    
+    
+    </script>
+
+</body>
+
+</html>
+
